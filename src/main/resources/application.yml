@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ai-code-monther-backend
+    # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ai-code-monther
+    username: root
+    password: 123456
+server:
+  port: 8123
+  servlet:
+    context-path: /api
+# springdoc-openapi项目配置
+springdoc:
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: com.lele.aicodemonther.controller
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
