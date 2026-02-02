@@ -27,10 +27,21 @@
               <a-space>
                 <a-avatar :src="loginUserStore.loginUser.userAvatar" />
                 <span>{{ loginUserStore.loginUser.userName ?? '新用户' }}</span>
+                <DownOutlined />
               </a-space>
 
               <template #overlay>
                 <a-menu>
+                  <a-sub-menu key="group" title="个人中心">
+                    <a-menu-item key="profile" @click="goProfile">
+                      <UserOutlined />
+                      个人信息
+                    </a-menu-item>
+                    <a-menu-item key="changePassword" @click="goChangePassword">
+                      <KeyOutlined />
+                      修改密码
+                    </a-menu-item>
+                  </a-sub-menu>
                   <a-menu-item key="logout" @click="doLogout">
                     <LogoutOutlined />
                     退出登录
@@ -56,7 +67,7 @@ import { message } from 'ant-design-vue'
 // 引入登录用户信息存储
 import { useLoginUserStore } from '@/stores/loginUser'
 // 引入图标
-import { LogoutOutlined } from '@ant-design/icons-vue'
+import { LogoutOutlined, UserOutlined, DownOutlined, KeyOutlined } from '@ant-design/icons-vue'
 import { userLogout } from '@/api/userController'
 
 const loginUserStore = useLoginUserStore()
@@ -104,6 +115,7 @@ const filterItems = (menus = [] as MenuProps['items']) => {
 }
 
 const menuItems = computed<MenuProps['items']>(() => filterItems(originItems))
+
 // 处理菜单点击
 const handleMenuClick: MenuProps['onClick'] = (e) => {
   const key = e.key as string
@@ -127,6 +139,16 @@ const doLogout = async () => {
   } else {
     message.error('退出登录失败' + result.data.message)
   }
+}
+
+// 处理个人信息点击
+const goProfile = () => {
+  router.push('/user/changeSelfInfo')
+}
+
+// 处理修改密码点击
+const goChangePassword = () => {
+  router.push('/user/changePassword')
 }
 </script>
 

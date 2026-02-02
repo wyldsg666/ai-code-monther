@@ -3,7 +3,13 @@
     <h2 class="register-title">AI 代码生成平台 - 用户注册</h2>
     <div class="desc">不用写一行代码，就可以生成符合要求的应用！</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSubmit">
-      <a-form-item name="userAccount" :rules="[{ required: true, message: '用户名不能为空！' }]">
+      <a-form-item
+        name="userAccount"
+        :rules="[
+          { required: true, message: '用户名不能为空！' },
+          { validator: validateUserAccount },
+        ]"
+      >
         <a-input v-model:value="formState.userAccount" placeholder="请输入用户名" />
       </a-form-item>
 
@@ -49,6 +55,17 @@ const formState = reactive<API.UserRegisterRequest>({
   checkPassword: '',
 })
 
+const validateUserAccount = async (_rule: any, value: string) => {
+  if (!value) {
+    return Promise.resolve()
+  }
+  const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]+$/
+  if (!regex.test(value)) {
+    return Promise.reject('用户名只能包含字母、数字和符号！')
+  }
+  return Promise.resolve()
+}
+
 const validateCheckPassword = async (_rule: any, value: string) => {
   if (value !== formState.userPassword) {
     return Promise.reject('两次输入的密码不一致！')
@@ -64,6 +81,7 @@ const handleSubmit = async (values: any) => {
       path: '/user/login',
       replace: true,
     })
+    return false
   } else {
     message.error('注册失败！' + result.data.message)
   }

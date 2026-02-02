@@ -51,7 +51,7 @@ public class UserController {
         long result = userService.userRegister(userAccount, userPassword, checkPassword);
 
         return ResultUtils.success(result);
-    };
+    }
 
     /**
      * 用户登录
@@ -70,7 +70,7 @@ public class UserController {
 
     /**
      * 获取用户登录信息
-     * @param request
+     * @param request 请求对象
      * @return
      */
     @GetMapping("/get/login")
@@ -155,6 +155,23 @@ public class UserController {
         if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
+        User user = new User();
+        BeanUtil.copyProperties(userUpdateRequest, user);
+        boolean result = userService.updateById(user);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 更新个人信息
+     *
+     * @param userUpdateRequest 用户更新请求
+     */
+    @PostMapping("/update/my")
+    public BaseResponse<Boolean> updateMyUser(@RequestBody UserUpdateRequest userUpdateRequest) {
+    if (userUpdateRequest == null || userUpdateRequest.getId() == null) {
+        throw new BusinessException(ErrorCode.PARAMS_ERROR);
+    }
         User user = new User();
         BeanUtil.copyProperties(userUpdateRequest, user);
         boolean result = userService.updateById(user);
