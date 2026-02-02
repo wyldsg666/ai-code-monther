@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
 import { message } from 'ant-design-vue'
@@ -92,11 +92,11 @@ const originItems = [
     label: '用户管理',
     title: '用户管理',
   },
-  // {
-  //   key: 'others',
-  //   label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
-  //   title: '编程导航',
-  // },
+  {
+    key: 'others',
+    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
+    title: '编程导航',
+  },
 ]
 
 const filterItems = (menus = [] as MenuProps['items']) => {

@@ -112,9 +112,11 @@ const pagination = computed(() => {
   return {
     current: queryParam.pageNum ?? 1,
     pageSize: queryParam.pageSize ?? 10,
-    total: totalRows,
+    total: +totalRows.value,
     showSizeChanger: true,
     showTotal: (total: number) => `共 ${total} 条`,
+    pageSizeOptions: ['5', '10', '20', '50', '100'],
+    showQuickJumper: true,
   }
 })
 

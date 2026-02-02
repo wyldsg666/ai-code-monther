@@ -14,6 +14,9 @@ const router = createRouter({
       path: '/noAuth',
       name: 'noAuth',
       component: () => import('@/pages/noAuth.vue'),
+      meta: {
+        access: ACCESS_ENUM.USER,
+      },
     },
     {
       path: '/user/login',
