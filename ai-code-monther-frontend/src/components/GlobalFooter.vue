@@ -2,7 +2,12 @@
   <a-layout-footer class="footer">
     <div class="footer-content">
       <p class="copyright">
-        <a href="https://github.com/wyldsg666" target="_blank" rel="noopener noreferrer" class="author-link">
+        <a
+          href="https://github.com/wyldsg666"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="author-link"
+        >
           ZoneSt独立项目 by 程序员 ZoneSt
         </a>
       </p>
