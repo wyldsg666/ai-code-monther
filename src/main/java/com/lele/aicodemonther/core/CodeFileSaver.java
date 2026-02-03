@@ -12,6 +12,7 @@ import java.io.File;
 /**
  * 代码文件保存器
  */
+@Deprecated
 public class CodeFileSaver {
     // 文件保存根目录
     private static final String FILE_SAVE_ROOT_DIR = System.getProperty("user.dir") + "/tmp/code_output";
