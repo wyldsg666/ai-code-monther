@@ -58,7 +58,7 @@ public abstract class CodeFileSaveTemplate<T> {
      *
      * @return 文件路径
      */
-    private String buildUniqueDir() {
+    protected final String buildUniqueDir() {
         String bizType = getCodeType().getValue();
         String uniqueDirName = StrUtil.format("{}_{}", bizType, IdUtil.getSnowflakeNextId());
         String dirPath = FILE_SAVE_ROOT_DIR + File.separator + uniqueDirName;
@@ -73,7 +73,7 @@ public abstract class CodeFileSaveTemplate<T> {
      * @param fileName 文件名
      * @param content  文件内容
      */
-    public final void writeToFile(String dirPath, String fileName, String content) {
+    protected final void writeToFile(String dirPath, String fileName, String content) {
         if (StrUtil.isNotBlank(content)) {
             String filePath = dirPath + File.separator + fileName;
             FileUtil.writeUtf8String(content, filePath);
