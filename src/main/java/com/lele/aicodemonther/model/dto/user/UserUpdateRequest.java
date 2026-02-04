@@ -1,4 +1,4 @@
-package com.lele.aicodemonther.model.dto;
+package com.lele.aicodemonther.model.dto.user;
 
 import lombok.Data;
 

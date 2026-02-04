@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lele.aicodemonther.exception.BusinessException;
 import com.lele.aicodemonther.exception.ErrorCode;
-import com.lele.aicodemonther.model.dto.UserQueryRequest;
+import com.lele.aicodemonther.model.dto.user.UserQueryRequest;
 import com.lele.aicodemonther.model.enums.UserRoleEnum;
 import com.lele.aicodemonther.model.vo.LoginUserVO;
 import com.lele.aicodemonther.model.vo.UserVO;

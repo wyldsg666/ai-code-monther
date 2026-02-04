@@ -9,7 +9,7 @@ import com.lele.aicodemonther.coustant.UserConstant;
 import com.lele.aicodemonther.exception.BusinessException;
 import com.lele.aicodemonther.exception.ErrorCode;
 import com.lele.aicodemonther.exception.ThrowUtils;
-import com.lele.aicodemonther.model.dto.*;
+import com.lele.aicodemonther.model.dto.user.*;
 import com.lele.aicodemonther.model.vo.LoginUserVO;
 import com.lele.aicodemonther.model.vo.UserVO;
 import com.mybatisflex.core.paginate.Page;

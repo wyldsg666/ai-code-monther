@@ -1,6 +1,6 @@
 package com.lele.aicodemonther.service;
 
-import com.lele.aicodemonther.model.dto.UserQueryRequest;
+import com.lele.aicodemonther.model.dto.user.UserQueryRequest;
 import com.lele.aicodemonther.model.vo.LoginUserVO;
 import com.lele.aicodemonther.model.vo.UserVO;
 import com.mybatisflex.core.query.QueryWrapper;
