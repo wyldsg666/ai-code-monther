@@ -1,10 +1,12 @@
 package com.lele.aicodemonther.service;
 
 import com.lele.aicodemonther.model.dto.app.AppQueryRequest;
+import com.lele.aicodemonther.model.entity.User;
 import com.lele.aicodemonther.model.vo.AppVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.lele.aicodemonther.model.entity.App;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -14,6 +16,17 @@ import java.util.List;
  * @author <a href="https://github.com/wyldsg666">ZoneSt</a>
  */
 public interface AppService extends IService<App> {
+
+
+    /**
+     * 调用 AI 大模型生成应用代码
+     *
+     * @param appId     应用 id
+     * @param message   用户提示词
+     * @param loginUser 登录用户
+     * @return 生成的代码
+     */
+    Flux<String> chatToGenCode(Long appId, String message, User loginUser);
 
     /**
      * 获取应用封装类
@@ -38,4 +51,14 @@ public interface AppService extends IService<App> {
      * @return 查询条件包装器
      */
     QueryWrapper getQueryWrapper(AppQueryRequest appQueryRequest);
+
+    /**
+     * 应用部署
+     *
+     * @param appId     应用 id
+     * @param loginUser 登录用户
+     * @return 部署结果的 URL
+     */
+    String deployApp(Long appId, User loginUser);
+
 }
