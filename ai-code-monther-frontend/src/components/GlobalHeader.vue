@@ -84,7 +84,11 @@ const originItems = [
   },
   {
     key: 'others',
-    label: h('a', { href: 'https://www.codefather.cn', target: '_blank' }, '编程导航'),
+    label: h(
+      'a',
+      { href: 'https://www.codefather.cn/vip?shareCode=vpjb6v', target: '_blank' },
+      '编程导航',
+    ),
     title: '编程导航',
   },
 ]
@@ -133,8 +137,15 @@ const doLogout = async () => {
 
 <style scoped>
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: calc(100vw - 14px);
+  z-index: 1000;
   background: #fff;
   padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 0 0 12px 12px;
 }
 
 .header-left {
