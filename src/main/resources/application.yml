@@ -1,7 +1,12 @@
 spring:
   application:
     name: ai-code-monther-backend
-    # mysql
+  # session 设置
+  session:
+    story-type: redis
+    # session 30 天过期
+    timeout: 2592000
+  # mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ai-code-monther
@@ -21,6 +26,10 @@ server:
   port: 8123
   servlet:
     context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
 # springdoc-openapi项目配置
 springdoc:
   group-configs:
