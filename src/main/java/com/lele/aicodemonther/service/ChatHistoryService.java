@@ -6,6 +6,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.lele.aicodemonther.model.entity.ChatHistory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,16 @@ import java.time.LocalDateTime;
  * @author <a href="https://github.com/wyldsg666">ZoneSt</a>
  */
 public interface ChatHistoryService extends IService<ChatHistory> {
+
+    /**
+     * 将对话历史加载到内存中
+     *
+     * @param appId      应用id
+     * @param chatMemory 内存
+     * @param maxCount   最大加载数量
+     * @return 加载的数量
+     */
+    int loadChatHistoryToMemory(Long appId, MessageWindowChatMemory chatMemory, int maxCount);
 
     /**
      * 添加对话记录

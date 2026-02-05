@@ -1,5 +1,6 @@
 package com.lele.aicodemonther.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lele.aicodemonther.coustant.UserConstant;
 import com.lele.aicodemonther.exception.ErrorCode;
@@ -15,23 +16,66 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.lele.aicodemonther.model.entity.ChatHistory;
 import com.lele.aicodemonther.mapper.ChatHistoryMapper;
 import com.lele.aicodemonther.service.ChatHistoryService;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 对话历史 服务层实现。
  *
  * @author <a href="https://github.com/wyldsg666">ZoneSt</a>
  */
+@Slf4j
 @Service
 public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatHistory> implements ChatHistoryService {
 
     @Resource
     @Lazy
     private AppService appService;
+
+
+    @Override
+    public int loadChatHistoryToMemory(Long appId, MessageWindowChatMemory chatMemory, int maxCount) {
+        try {
+            QueryWrapper queryWrapper = QueryWrapper.create()
+                    .eq("appId", appId)
+                    .orderBy("createTime", false)
+                    .limit(1, maxCount);
+            List<ChatHistory> historyList = this.list(queryWrapper);
+            if (CollUtil.isEmpty(historyList)) {
+                return 0;
+            }
+            // 反转列表,确保按照时间正序
+            historyList = historyList.reversed();
+
+            // 按照时间顺序将消息添加到记忆中
+            int loadedCount = 0;
+
+            // 先清理历史缓存，防止重复加载
+            chatMemory.clear();
+            for (ChatHistory chatHistory : historyList) {
+                if (ChatHistoryMessageTypeEnum.USER.getValue().equals(chatHistory.getMessageType())) {
+                    chatMemory.add(UserMessage.from(chatHistory.getMessage()));
+                } else if (ChatHistoryMessageTypeEnum.AI.getValue().equals(chatHistory.getMessageType())) {
+                    chatMemory.add(AiMessage.from(chatHistory.getMessage()));
+                }
+                loadedCount++;
+            }
+
+            log.info("成功为 appId：{} 加载了 {} 条历史记录", appId, loadedCount);
+            return loadedCount;
+        } catch (Exception e) {
+            log.error("加载历史记录失败, appId: {} , error: {}", appId, e.getMessage(), e);
+            return 0;
+        }
+    }
 
     /**
      * 添加对话记录

@@ -1,7 +1,9 @@
 package com.lele.aicodemonther.ai;
 import com.lele.aicodemonther.ai.model.HtmlCodeResult;
 import com.lele.aicodemonther.ai.model.MultiFileCodeResult;
+import dev.langchain4j.service.MemoryId;
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.UserMessage;
 import reactor.core.publisher.Flux;
 
 public interface AiCodeGeneratorService {
