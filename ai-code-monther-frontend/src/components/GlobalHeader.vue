@@ -2,11 +2,11 @@
   <a-layout-header class="header">
     <a-row :wrap="false">
       <!-- 左侧：Logo和标题 -->
-      <a-col flex="200px">
+      <a-col flex="250px">
         <RouterLink to="/">
           <div class="header-left">
             <img class="logo" src="@/assets/logo.png" alt="Logo" />
-            <h1 class="site-title">AI应用生成</h1>
+            <h1 class="site-title">AI零代码生成应用平台</h1>
           </div>
         </RouterLink>
       </a-col>
@@ -53,7 +53,13 @@ import { useRouter } from 'vue-router'
 import { type MenuProps, message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/loginUser.ts'
 import { userLogout } from '@/api/userController.ts'
-import { LogoutOutlined, HomeOutlined } from '@ant-design/icons-vue'
+import Icon, {
+  LogoutOutlined,
+  HomeOutlined,
+  UserOutlined,
+  CodeOutlined,
+  GlobalOutlined,
+} from '@ant-design/icons-vue'
 
 const loginUserStore = useLoginUserStore()
 const router = useRouter()
@@ -74,16 +80,19 @@ const originItems = [
   },
   {
     key: '/admin/userManage',
+    icon: () => h(UserOutlined),
     label: '用户管理',
     title: '用户管理',
   },
   {
     key: '/admin/appManage',
+    icon: () => h(CodeOutlined),
     label: '应用管理',
     title: '应用管理',
   },
   {
     key: 'others',
+    icon: () => h(GlobalOutlined),
     label: h(
       'a',
       { href: 'https://www.codefather.cn/vip?shareCode=vpjb6v', target: '_blank' },
@@ -142,8 +151,11 @@ const doLogout = async () => {
   left: 0;
   width: calc(100vw - 14px);
   z-index: 1000;
-  background: #fff;
-  padding: 0 24px;
+  background: transparent;
+  background-image: radial-gradient(transparent 1px, #ffffff 1px);
+  background-size: 3px 3px;
+  backdrop-filter: saturate(50%) blur(4px);
+  padding: 0 48px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border-radius: 0 0 12px 12px;
 }
@@ -167,5 +179,11 @@ const doLogout = async () => {
 
 .ant-menu-horizontal {
   border-bottom: none !important;
+}
+
+:where(.css-dev-only-do-not-override-1p3hq3p).ant-menu-light {
+  color: rgba(0, 0, 0, 0.88);
+  /* background: #ffffff; */
+  background-color: transparent;
 }
 </style>

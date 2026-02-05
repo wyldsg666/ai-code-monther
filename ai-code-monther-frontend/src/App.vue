@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import BasicLayout from '@/layouts/BasicLayout.vue'
-import zhCN from 'ant-design-vue/es/locale/zh_CN';
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import { theme } from 'ant-design-vue'
 </script>
 
 <template>
-  <a-config-provider :locale="zhCN">
+  <a-config-provider
+    :locale="zhCN"
+    :theme="{
+      algorithm: theme.defaultAlgorithm,
+    }"
+  >
     <BasicLayout />
   </a-config-provider>
 </template>

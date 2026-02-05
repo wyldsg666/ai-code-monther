@@ -12,9 +12,11 @@ import com.lele.aicodemonther.exception.ErrorCode;
 import com.lele.aicodemonther.exception.ThrowUtils;
 import com.lele.aicodemonther.model.dto.app.AppQueryRequest;
 import com.lele.aicodemonther.model.entity.User;
+import com.lele.aicodemonther.model.enums.ChatHistoryMessageTypeEnum;
 import com.lele.aicodemonther.model.enums.CodeGenTypeEnum;
 import com.lele.aicodemonther.model.vo.AppVO;
 import com.lele.aicodemonther.model.vo.UserVO;
+import com.lele.aicodemonther.service.ChatHistoryService;
 import com.lele.aicodemonther.service.UserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -22,11 +24,13 @@ import com.lele.aicodemonther.model.entity.App;
 import com.lele.aicodemonther.mapper.AppMapper;
 import com.lele.aicodemonther.service.AppService;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,11 +46,15 @@ import java.util.stream.Collectors;
 @Service
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
+    private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
     @Resource
     private UserService userService;
 
     @Resource
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
+
+    @Resource
+    private ChatHistoryService chatHistoryService;
 
     /**
      *
@@ -70,8 +78,27 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         String codeGenType = app.getCodeGenType();
         CodeGenTypeEnum codeGenTypeEnum = CodeGenTypeEnum.getEnumByValue(codeGenType);
         ThrowUtils.throwIf(codeGenTypeEnum == null, ErrorCode.PARAMS_ERROR, "代码生成类型不能为空");
-        // 5. 调用代码生成器进行代码生成
-        return aiCodeGeneratorFacade.generatorAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        // 5.调用AI服务前，向数据库插入用户输入的提示词
+        chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
+        // 6. 调用代码生成器进行代码生成
+        Flux<String> contentStream = aiCodeGeneratorFacade.generatorAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        // 7.收集Ai响应的内容完成后保存记录到对话历史
+        StringBuilder aiResponseBuilder = new StringBuilder();
+        return contentStream.map(chunk -> {
+            // 实时收集代码片段
+            aiResponseBuilder.append(chunk);
+            return chunk;
+        }).doOnComplete(() -> {
+            // 流式返回完成后，保存对话记忆
+            String aiMessage = aiResponseBuilder.toString();
+            chatHistoryService.addChatMessage(appId, aiMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+
+        }).doOnError(error -> {
+            // 即使回复失败，也要保存到对话历史
+            String errorMessage = "AI 回复失败:" + error.getMessage();
+            chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
+        });
+
     }
 
     /**
@@ -209,5 +236,30 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         return String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
     }
 
+    /**
+     * 删除应用时，关联删除应用对话记录
+     *
+     * @param id 数据主键
+     * @return 删除是否成功
+     */
+    @Override
+    public boolean removeById(Serializable id) {
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "ID不能为空");
+        }
+        long appId = Long.parseLong(id.toString());
+        if (appId <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "ID错误");
+        }
 
+        // 先删除应用对话记录
+        try {
+            chatHistoryService.deleteByAppId(appId);
+        } catch (Exception e) {
+            log.error("删除应用对话记录失败:{}", e.getMessage());
+        }
+
+        // 删除应用
+        return super.removeById(id);
+    }
 }
