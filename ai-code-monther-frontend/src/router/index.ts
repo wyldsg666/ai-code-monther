@@ -1,50 +1,49 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomePage from '../pages/HomePage.vue'
-import ACCESS_ENUM from '@/access/accessEnum'
+import HomePage from '@/pages/HomePage.vue'
+import UserLoginPage from '@/pages/user/userLoginPage.vue'
+import UserRegisterPage from '@/pages/user/userRegisterPage.vue'
+import UserManagePage from '@/pages/admin/userManagePage.vue'
+import AppManagePage from '@/pages/admin/AppManagePage.vue'
+import AppChatPage from '@/pages/app/AppChatPage.vue'
+import AppEditPage from '@/pages/app/AppEditPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: '主页',
       component: HomePage,
     },
     {
-      path: '/noAuth',
-      name: 'noAuth',
-      component: () => import('@/pages/noAuth.vue'),
-      meta: {
-        access: ACCESS_ENUM.USER,
-      },
-    },
-    {
       path: '/user/login',
-      name: 'userLogin',
-      component: () => import('@/pages/user/userLoginPage.vue'),
+      name: '用户登录',
+      component: UserLoginPage,
     },
     {
       path: '/user/register',
-      name: 'userRegister',
-      component: () => import('@/pages/user/userRegisterPage.vue'),
-    },
-    {
-      path: '/user/changeSelfInfo',
-      name: 'userChangeSelfInfo',
-      component: () => import('@/pages/user/userChangeSelfInfo.vue'),
-    },
-    {
-      path: '/user/changePassword',
-      name: 'userChangePassword',
-      component: () => import('@/pages/user/userChangePasswordPage.vue'),
+      name: '用户注册',
+      component: UserRegisterPage,
     },
     {
       path: '/admin/userManage',
-      name: 'adminUserManage',
-      component: () => import('@/pages/admin/userManagePage.vue'),
-      meta: {
-        access: ACCESS_ENUM.ADMIN,
-      },
+      name: '用户管理',
+      component: UserManagePage,
+    },
+    {
+      path: '/admin/appManage',
+      name: '应用管理',
+      component: AppManagePage,
+    },
+    {
+      path: '/app/chat/:id',
+      name: '应用对话',
+      component: AppChatPage,
+    },
+    {
+      path: '/app/edit/:id',
+      name: '编辑应用',
+      component: AppEditPage,
     },
   ],
 })

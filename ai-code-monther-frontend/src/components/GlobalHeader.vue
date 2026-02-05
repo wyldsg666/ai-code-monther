@@ -6,7 +6,7 @@
         <RouterLink to="/">
           <div class="header-left">
             <img class="logo" src="@/assets/logo.png" alt="Logo" />
-            <h1 class="site-title">AI 代码生成平台</h1>
+            <h1 class="site-title">AI应用生成</h1>
           </div>
         </RouterLink>
       </a-col>
@@ -26,23 +26,11 @@
             <a-dropdown>
               <a-space>
                 <a-avatar :src="loginUserStore.loginUser.userAvatar" />
-                <span>{{ loginUserStore.loginUser.userName ?? '新用户' }}</span>
-                <DownOutlined />
+                {{ loginUserStore.loginUser.userName ?? '无名' }}
               </a-space>
-
               <template #overlay>
                 <a-menu>
-                  <a-sub-menu key="group" title="个人中心">
-                    <a-menu-item key="profile" @click="goProfile">
-                      <UserOutlined />
-                      个人信息
-                    </a-menu-item>
-                    <a-menu-item key="changePassword" @click="goChangePassword">
-                      <KeyOutlined />
-                      修改密码
-                    </a-menu-item>
-                  </a-sub-menu>
-                  <a-menu-item key="logout" @click="doLogout">
+                  <a-menu-item @click="doLogout">
                     <LogoutOutlined />
                     退出登录
                   </a-menu-item>
@@ -60,18 +48,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, h } from 'vue'
+import { computed, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { MenuProps } from 'ant-design-vue'
-import { message } from 'ant-design-vue'
-// 引入登录用户信息存储
-import { useLoginUserStore } from '@/stores/loginUser'
-// 引入图标
-import { LogoutOutlined, UserOutlined, DownOutlined, KeyOutlined } from '@ant-design/icons-vue'
-import { userLogout } from '@/api/userController'
+import { type MenuProps, message } from 'ant-design-vue'
+import { useLoginUserStore } from '@/stores/loginUser.ts'
+import { userLogout } from '@/api/userController.ts'
+import { LogoutOutlined, HomeOutlined } from '@ant-design/icons-vue'
 
 const loginUserStore = useLoginUserStore()
-
 const router = useRouter()
 // 当前选中菜单
 const selectedKeys = ref<string[]>(['/'])
@@ -84,13 +68,19 @@ router.afterEach((to, from, next) => {
 const originItems = [
   {
     key: '/',
-    label: '首页',
-    title: '首页',
+    icon: () => h(HomeOutlined),
+    label: '主页',
+    title: '主页',
   },
   {
     key: '/admin/userManage',
     label: '用户管理',
     title: '用户管理',
+  },
+  {
+    key: '/admin/appManage',
+    label: '应用管理',
+    title: '应用管理',
   },
   {
     key: 'others',
@@ -99,22 +89,22 @@ const originItems = [
   },
 ]
 
-const filterItems = (menus = [] as MenuProps['items']) => {
+// 过滤菜单项
+const filterMenus = (menus = [] as MenuProps['items']) => {
   return menus?.filter((menu) => {
     const menuKey = menu?.key as string
-    if (menuKey.startsWith('/admin')) {
+    if (menuKey?.startsWith('/admin')) {
       const loginUser = loginUserStore.loginUser
       if (!loginUser || loginUser.userRole !== 'admin') {
-        // 非管理员角色，不展示用户管理菜单
         return false
       }
     }
-    // 管理员角色，展示用户管理菜单
     return true
   })
 }
 
-const menuItems = computed<MenuProps['items']>(() => filterItems(originItems))
+// 展示在菜单的路由数组
+const menuItems = computed<MenuProps['items']>(() => filterMenus(originItems))
 
 // 处理菜单点击
 const handleMenuClick: MenuProps['onClick'] = (e) => {
@@ -126,29 +116,18 @@ const handleMenuClick: MenuProps['onClick'] = (e) => {
   }
 }
 
-// 处理退出登录
+// 退出登录
 const doLogout = async () => {
-  const result = await userLogout()
-  if (result.data.code === 0) {
-    // 清空登录用户信息
+  const res = await userLogout()
+  if (res.data.code === 0) {
     loginUserStore.setLoginUser({
       userName: '未登录',
     })
     message.success('退出登录成功')
     await router.push('/user/login')
   } else {
-    message.error('退出登录失败' + result.data.message)
+    message.error('退出登录失败，' + res.data.message)
   }
-}
-
-// 处理个人信息点击
-const goProfile = () => {
-  router.push('/user/changeSelfInfo')
-}
-
-// 处理修改密码点击
-const goChangePassword = () => {
-  router.push('/user/changePassword')
 }
 </script>
 
@@ -171,9 +150,8 @@ const goChangePassword = () => {
 
 .site-title {
   margin: 0;
-  font-size: 19px;
+  font-size: 18px;
   color: #1890ff;
-  font-weight: 700;
 }
 
 .ant-menu-horizontal {

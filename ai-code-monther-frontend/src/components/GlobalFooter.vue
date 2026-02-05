@@ -2,13 +2,9 @@
   <a-layout-footer class="footer">
     <div class="footer-content">
       <p class="copyright">
-        <a
-          href="https://github.com/wyldsg666"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="author-link"
-        >
-          ZoneSt独立项目 by 程序员 ZoneSt
+        <a href="https://github.com/wyldsg666/ai-code-monther" target="_blank" rel="noopener noreferrer"
+          class="author-link">
+          GitHub 项目 AI 零代码生成平台
         </a>
       </p>
     </div>
@@ -21,13 +17,12 @@
 
 <style scoped>
 .footer {
-  background: #efefef;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
   text-align: center;
   padding: 20px;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  margin-top: 40px;
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
 }
 
 .copyright {

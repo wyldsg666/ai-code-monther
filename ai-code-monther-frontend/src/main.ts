@@ -1,14 +1,12 @@
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 
-import App from './App.vue';
-import router from './router';
-import Antd from 'ant-design-vue';
-import 'ant-design-vue/dist/reset.css';
-import zhCN from 'ant-design-vue/es/locale/zh_CN';
-import 'dayjs/locale/zh-cn';
-// import '@/access.ts';
-import '@/access';
+import App from './App.vue'
+import router from './router'
+
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css'
+import '@/access'
 
 const app = createApp(App)
 
