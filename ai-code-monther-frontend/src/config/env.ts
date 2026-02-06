@@ -1,3 +1,5 @@
+import { CodeGenTypeEnum } from '@/utils/codeGenTypes'
+
 /**
  * 环境变量配置
  */
@@ -18,5 +20,9 @@ export const getDeployUrl = (deployKey: string) => {
 
 // 获取静态资源预览URL
 export const getStaticPreviewUrl = (codeGenType: string, appId: string) => {
-  return `${STATIC_BASE_URL}/${codeGenType}_${appId}/`
+  const baseUrl = `${STATIC_BASE_URL}/${codeGenType}_${appId}/`
+  if (codeGenType === CodeGenTypeEnum.VUE_PROJECT) {
+    return `${baseUrl}dist/index.html`
+  }
+  return baseUrl
 }

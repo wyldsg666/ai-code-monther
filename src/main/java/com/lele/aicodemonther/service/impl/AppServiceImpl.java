@@ -6,6 +6,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lele.aicodemonther.core.AiCodeGeneratorFacade;
+import com.lele.aicodemonther.core.builder.VueProjectBuilder;
 import com.lele.aicodemonther.core.handler.StreamHandlerExecutor;
 import com.lele.aicodemonther.coustant.AppConstant;
 import com.lele.aicodemonther.exception.BusinessException;
@@ -59,6 +60,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 
     @Resource
     private StreamHandlerExecutor streamHandlerExecutor;
+
+    @Resource
+    private VueProjectBuilder vueProjectBuilder;
 
     /**
      *
@@ -206,6 +210,19 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         // 检查路径是否存在
         File sourceDir = new File(sourceDirPath);
         ThrowUtils.throwIf(!sourceDir.exists() || !sourceDir.isDirectory(), ErrorCode.NOT_FOUND_ERROR, "应用代码不存在，请先生成应用");
+
+        // Vue 项目特殊处理
+        CodeGenTypeEnum codeGenTypeEnum = CodeGenTypeEnum.getEnumByValue(codeGenType);
+        if (codeGenTypeEnum == CodeGenTypeEnum.VUE_PROJECT) {
+            // 构建项目
+            boolean buildSuccess = vueProjectBuilder.buildProject(sourceDirPath);
+            ThrowUtils.throwIf(!buildSuccess, ErrorCode.SYSTEM_ERROR, "Vue 项目构建失败,请重试");
+            // 获取构建后的目录
+            File distDir = new File(sourceDirPath, "dist");
+            ThrowUtils.throwIf(!distDir.exists() || !distDir.isDirectory(), ErrorCode.SYSTEM_ERROR, "Vue 项目构建失败,请重试");
+            // 构建完成后，则使用构建后的目录
+            sourceDir = distDir;
+        }
 
         // 复制文件到部署目录
         String deployDirPath = AppConstant.CODE_DEPLOY_ROOT_DIR + File.separator + deployKey;

@@ -1,6 +1,119 @@
 package com.lele.aicodemonther.core.builder;
 
-public class VueProgectBuider {
+import cn.hutool.core.util.RuntimeUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 构建Vue项目
+ */
+@Slf4j
+@Component
+public class VueProjectBuilder {
+
+
+    /**
+     * 异步构建Vue项目
+     *
+     * @param projectPath 项目路径
+     */
+    public void buildProjectAsync(String projectPath) {
+        Thread.ofVirtual().name("Vue Builder-" + System.currentTimeMillis())
+                .start(() -> {
+                    try {
+                        buildProject(projectPath);
+                    } catch (Exception e) {
+                        log.error("异步构建Vue项目失败:{}", e.getMessage(), e);
+                    }
+                });
+    }
+
+    /**
+     * 构建Vue项目
+     *
+     * @param projectPath 项目路径
+     * @return 是否构建成功
+     */
+    public boolean buildProject(String projectPath) {
+        File projectDir = new File(projectPath);
+        if (!projectDir.exists() || !projectDir.isDirectory()) {
+            log.error("项目路径不存在或不是一个目录: {}", projectPath);
+            return false;
+        }
+        // 检查是否有 package.json 文件
+        File packageJson = new File(projectDir, "package.json");
+        if (!packageJson.exists()) {
+            log.error("项目目录中没有 package.json 文件: {}", projectPath);
+            return false;
+        }
+
+        log.info("开始构建 Vue 项目: {}", projectPath);
+        // 执行 npm install
+        if (!executeNpmInstall(projectDir)) {
+            log.error("npm install 执行失败:{}", projectDir);
+            return false;
+        }
+        // 执行 npm run build
+        if (!executeNpmBuild(projectDir)) {
+            log.error("npm run build 执行失败:{}", projectDir);
+            return false;
+        }
+
+        // 验证dist目录是否存在
+        File distDir = new File(projectDir, "dist");
+        if (!distDir.exists() || !distDir.isDirectory()) {
+            log.error("构建完成，但 dist 目录不存在: {}", projectPath);
+            return false;
+        }
+        log.info("Vue项目构建完成，dist 目录: {}", projectPath);
+        return true;
+    }
+
+    /**
+     * 执行 npm install 命令
+     */
+    private boolean executeNpmInstall(File projectDir) {
+        log.info("执行 npm install...");
+        String command = String.format("%s install", buildCommand("npm"));
+        return executeCommand(projectDir, command, 300); // 5分钟超时
+    }
+
+    /**
+     * 执行 npm run build 命令
+     */
+    private boolean executeNpmBuild(File projectDir) {
+        log.info("执行 npm run build...");
+        String command = String.format("%s run build", buildCommand("npm"));
+        return executeCommand(projectDir, command, 180); // 3分钟超时
+    }
+
+    /**
+     * 操作系统检测
+     *
+     * @return
+     */
+    private boolean isWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("windows");
+    }
+
+
+    /**
+     * 根据操作系统构造命令
+     *
+     * @param baseCommand
+     * @return
+     */
+    private String buildCommand(String baseCommand) {
+        if (isWindows()) {
+            return baseCommand + ".cmd";
+        }
+        return baseCommand;
+    }
+
+
     /**
      * 执行命令
      *
