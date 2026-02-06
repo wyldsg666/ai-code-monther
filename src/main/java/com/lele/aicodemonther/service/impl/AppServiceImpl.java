@@ -6,6 +6,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lele.aicodemonther.core.AiCodeGeneratorFacade;
+import com.lele.aicodemonther.core.handler.StreamHandlerExecutor;
 import com.lele.aicodemonther.coustant.AppConstant;
 import com.lele.aicodemonther.exception.BusinessException;
 import com.lele.aicodemonther.exception.ErrorCode;
@@ -56,6 +57,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
     @Resource
     private ChatHistoryService chatHistoryService;
 
+    @Resource
+    private StreamHandlerExecutor streamHandlerExecutor;
+
     /**
      *
      * @param appId     应用 id
@@ -81,24 +85,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         // 5.调用AI服务前，向数据库插入用户输入的提示词
         chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
         // 6. 调用代码生成器进行代码生成
-        Flux<String> contentStream = aiCodeGeneratorFacade.generatorAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        Flux<String> codeStream = aiCodeGeneratorFacade.generatorAndSaveCodeStream(message, codeGenTypeEnum, appId);
         // 7.收集Ai响应的内容完成后保存记录到对话历史
-        StringBuilder aiResponseBuilder = new StringBuilder();
-        return contentStream.map(chunk -> {
-            // 实时收集代码片段
-            aiResponseBuilder.append(chunk);
-            return chunk;
-        }).doOnComplete(() -> {
-            // 流式返回完成后，保存对话记忆
-            String aiMessage = aiResponseBuilder.toString();
-            chatHistoryService.addChatMessage(appId, aiMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-
-        }).doOnError(error -> {
-            // 即使回复失败，也要保存到对话历史
-            String errorMessage = "AI 回复失败:" + error.getMessage();
-            chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-        });
-
+        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
     }
 
     /**
@@ -248,7 +237,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "ID不能为空");
         }
         long appId = Long.parseLong(id.toString());
-        if (appId <= 0){
+        if (appId <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "ID错误");
         }
 
