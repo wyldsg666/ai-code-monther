@@ -117,7 +117,7 @@ public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatH
     public boolean deleteByAppId(Long appId) {
         ThrowUtils.throwIf(appId == null || appId <= 0, ErrorCode.PARAMS_ERROR, "应用Id不能为空");
         QueryWrapper queryWrapper = QueryWrapper.create()
-                .eq("app_id", appId);
+                .eq("appId", appId);
         return this.remove(queryWrapper);
 
     }
@@ -181,7 +181,7 @@ public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatH
                 .eq("userId", userId);
         // 游标查询
         if (localDateTime != null) {
-            queryWrapper.lt("create_time", localDateTime);
+            queryWrapper.lt("createTime", localDateTime);
         }
         // 排序
         if (StrUtil.isNotBlank(sortField)) {

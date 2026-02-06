@@ -33,4 +33,17 @@ class AiCodeGeneratorFacadeTest {
         String completeCode = String.join("", resultList);
         Assertions.assertNotNull(completeCode);
     }
+
+    @Test
+    void generatorVueProjectStream() {
+        Flux<String> codeStream = aiCodeGeneratorFacade.generatorAndSaveCodeStream("生成一个界面美观的登录页面,总共不超过200行代码",
+                CodeGenTypeEnum.VUE_PROJECT, 3L);
+        // 阻塞等待所有数据收集完成
+        List<String> resultList = codeStream.collectList().block();
+        // 验证结果
+        Assertions.assertNotNull(resultList);
+        // 将结果拼接成完整的代码
+        String completeCode = String.join("", resultList);
+        Assertions.assertNotNull(completeCode);
+    }
 }
