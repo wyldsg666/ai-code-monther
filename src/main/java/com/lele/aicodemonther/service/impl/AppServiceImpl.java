@@ -19,6 +19,7 @@ import com.lele.aicodemonther.model.enums.CodeGenTypeEnum;
 import com.lele.aicodemonther.model.vo.AppVO;
 import com.lele.aicodemonther.model.vo.UserVO;
 import com.lele.aicodemonther.service.ChatHistoryService;
+import com.lele.aicodemonther.service.ScreenshotService;
 import com.lele.aicodemonther.service.UserService;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
@@ -63,6 +64,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
 
     @Resource
     private VueProjectBuilder vueProjectBuilder;
+
+    @Resource
+    private ScreenshotService screenshotService;
 
     /**
      *
@@ -239,8 +243,35 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         appUpdate.setDeployedTime(LocalDateTime.now());
         this.updateById(appUpdate);
         // 返回可访问的 URL 地址
-        return String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
+        String appDepLoyUrl = String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
+
+        generateAppScreenshotAsync(appId, appDepLoyUrl);
+        return appDepLoyUrl;
     }
+
+    /**
+     * 异步生成应用截图
+     *
+     * @param appId        应用id
+     * @param appDepLoyUrl 应用访问地址
+     */
+    @Override
+    public void generateAppScreenshotAsync(Long appId, String appDepLoyUrl) {
+        Thread.startVirtualThread(() -> {
+            // 调用截图服务生成截图并上传
+            String screenshotUrl = screenshotService.generateAndUploadScreenshot(appDepLoyUrl);
+
+            // 更新数据库的封面
+            App app = new App();
+            app.setId(appId);
+            app.setCover(screenshotUrl);
+            boolean uploaded = this.updateById(app);
+            if (!uploaded) {
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "更新应用封面失败");
+            }
+        });
+    }
+
 
     /**
      * 删除应用时，关联删除应用对话记录
