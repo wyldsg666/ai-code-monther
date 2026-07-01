@@ -31,6 +31,7 @@ import com.lele.aicodemonther.service.AppService;
 import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -52,6 +53,10 @@ import java.util.stream.Collectors;
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppService {
 
     private static final Logger log = LoggerFactory.getLogger(AppServiceImpl.class);
+
+    @Value("${code.deploy-host:http://localhost}")
+    private String deployHost;
+
     @Resource
     private UserService userService;
 
@@ -278,7 +283,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         appUpdate.setDeployedTime(LocalDateTime.now());
         this.updateById(appUpdate);
         // 返回可访问的 URL 地址
-        String appDepLoyUrl = String.format("%s/%s", AppConstant.CODE_DEPLOY_HOST, deployKey);
+        String appDepLoyUrl = String.format("%s/%s", deployHost, deployKey);
 
         generateAppScreenshotAsync(appId, appDepLoyUrl);
         return appDepLoyUrl;

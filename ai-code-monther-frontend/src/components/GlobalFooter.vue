@@ -3,12 +3,12 @@
     <div class="footer-content">
       <p class="copyright">
         <a
-          href="https://github.com/wyldsg666/ai-code-monther"
+          href="https://github.com/Zonest798/ai-code-monther"
           target="_blank"
           rel="noopener noreferrer"
           class="author-link"
         >
-          GitHub 项目 AI 零代码生成平台
+          @Copyright 2026 - Zonest798 AI Code Monther. All rights reserved.
         </a>
       </p>
     </div>
