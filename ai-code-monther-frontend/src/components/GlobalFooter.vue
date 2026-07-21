@@ -11,6 +11,16 @@
           @Copyright 2026 - Zonest798 AI Code Monther. All rights reserved.
         </a>
       </p>
+      <p class="beian">
+        <a
+          href="https://beian.miit.gov.cn"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="beian-link"
+        >
+          皖ICP备2026020889号
+        </a>
+      </p>
     </div>
   </a-layout-footer>
 </template>
@@ -35,9 +45,19 @@
   border-radius: 12px 12px 0 0;
 }
 
-.copyright {
+.copyright,
+.beian {
   margin: 0;
   color: #666;
   font-size: 14px;
+}
+
+.beian-link {
+  color: #666;
+  text-decoration: none;
+}
+
+.beian-link:hover {
+  color: #667eea;
 }
 </style>
