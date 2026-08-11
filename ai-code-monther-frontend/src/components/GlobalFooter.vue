@@ -18,7 +18,16 @@
           rel="noopener noreferrer"
           class="beian-link"
         >
-          皖ICP备2026020889号
+          皖ICP备2026020889-1号
+        </a>
+        <a
+          href="https://beian.mps.gov.cn/#/query/webSearch?code=34012302001395"
+          rel="noreferrer"
+          target="_blank"
+          class="beian-link"
+        >
+          <img :src="beiantubiao" alt="备案图标" class="beian-img" />
+          皖公网安备34012302001395号
         </a>
       </p>
     </div>
@@ -26,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-// 无需额外的响应式数据
+import beiantubiao from "../assets/beiantubiao.png";
 </script>
 
 <style scoped>
@@ -59,5 +68,12 @@
 
 .beian-link:hover {
   color: #667eea;
+}
+
+.beian-img {
+  width: 18px;
+  height: auto;
+  vertical-align: middle;
+  margin-right: 6px;
 }
 </style>
