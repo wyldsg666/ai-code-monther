@@ -18,7 +18,7 @@
           rel="noopener noreferrer"
           class="beian-link"
         >
-          皖ICP备2026020889-1号
+          皖ICP备2026020889号-1
         </a>
         <a
           href="https://beian.mps.gov.cn/#/query/webSearch?code=34012302001395"
